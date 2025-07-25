@@ -1,29 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Random LinkedIn Redirect</title>
+  <meta charset="UTF-8">
+  <title>Redirecting...</title>
   <script>
-    const urls = [
-      "https://www.linkedin.com/posts/exactuarial_what-is-series-has-officially-come-to-activity-7353014946286206977-K5il?utm_source=share&utm_medium=member_desktop&rcm=ACoAAEDNyp4BQaGkKcUp1n4rSuPavM-SJhNyPdw",
-      "https://www.linkedin.com/posts/exactuarial_coming-soon-%F0%9D%97%B2%F0%9D%97%BE%F0%9D%98%82%F0%9D%97%AE%F0%9D%98%81%F0%9D%97%B6%F0%9D%97%BC%F0%9D%97%BB-activity-7352300595480776704-490k?utm_source=share&utm_medium=member_desktop&rcm=ACoAAEDNyp4BQaGkKcUp1n4rSuPavM-SJhNyPdw",
-      "https://www.linkedin.com/posts/exactuarial_have-you-ever-wished-you-could-ask-at-the-activity-7349027528105164801-i4Wt?utm_source=share&utm_medium=member_desktop&rcm=ACoAAEDNyp4BQaGkKcUp1n4rSuPavM-SJhNyPdw",
-      "https://www.linkedin.com/posts/exactuarial_%D9%87%D9%84-%D8%AE%D8%B7%D8%B1-%D9%84%D9%83-%D8%A3%D9%86-%D8%AA%D8%B3%D8%A3%D9%84-%D9%81%D9%8A-%D9%86%D9%87%D8%A7%D9%8A%D8%A9-%D9%85%D9%82%D8%A7%D8%A8%D9%84%D8%A9-%D8%A7%D9%84%D8%B9%D9%85%D9%84-activity-7349025104317558785-I7ND?utm_source=share&utm_medium=member_desktop&rcm=ACoAAEDNyp4BQaGkKcUp1n4rSuPavM-SJhNyPdw",
-      "https://www.linkedin.com/posts/exactuarial_%D9%85%D9%87%D8%A7%D8%B1%D8%A9-%D8%A7%D9%84%D8%AA%D8%AD%D9%84%D9%8A%D9%84-%D9%81%D9%8A-%D8%B9%D8%A7%D9%84%D9%85-%D8%AA%D8%AA%D8%B2%D8%A7%D8%AD%D9%85-%D9%81%D9%8A%D9%87-%D8%A7%D9%84%D8%A8%D9%8A%D8%A7%D9%86%D8%A7%D8%AA-activity-7346062595847507969-FLRE?utm_source=share&utm_medium=member_desktop&rcm=ACoAAEDNyp4BQaGkKcUp1n4rSuPavM-SJhNyPdw",
-      "https://www.linkedin.com/posts/exactuarial_%F0%9D%97%94-%F0%9D%97%A6%F0%9D%97%B8%F0%9D%97%B6%F0%9D%97%B9%F0%9D%97%B9-%F0%9D%97%96%F0%9D%97%BC%F0%9D%97%BA%F0%9D%97%BA%F0%9D%98%82%F0%9D%97%BB%F0%9D%97%B6%F0%9D%97%B0%F0%9D%97%AE%F0%9D%98%81%F0%9D%97%B6%F0%9D%97%BC%F0%9D%97%BB-activity-7343525893048340482-sKzR?utm_source=share&utm_medium=member_desktop&rcm=ACoAAEDNyp4BQaGkKcUp1n4rSuPavM-SJhNyPdw",
-      
-      // Add as many LinkedIn post URLs as you want here
-    ];
-    const randomUrl = urls[Math.floor(Math.random() * urls.length)];
-    window.location.href = randomUrl;
+    const storageKey = "shownIndexes";
+    let urls = [];
+
+    fetch("urls.json")
+      .then(response => response.json())
+      .then(data => {
+        urls = data;
+        redirectToRandomUrl();
+      })
+      .catch(error => {
+        console.error("Failed to load URL list:", error);
+        // Optional: fallback page or static redirect if fetch fails
+      });
+
+    function redirectToRandomUrl() {
+      if (!urls.length) return;
+
+      let shownIndexes = JSON.parse(localStorage.getItem(storageKey)) || [];
+      let remainingIndexes = urls.map((_, i) => i).filter(i => !shownIndexes.includes(i));
+
+      if (remainingIndexes.length === 0) {
+        shownIndexes = [];
+        remainingIndexes = urls.map((_, i) => i);
+      }
+
+      const randomIndex = remainingIndexes[Math.floor(Math.random() * remainingIndexes.length)];
+      const chosenUrl = urls[randomIndex];
+
+      shownIndexes.push(randomIndex);
+      localStorage.setItem(storageKey, JSON.stringify(shownIndexes));
+
+      // Redirect immediately
+      window.location.replace(chosenUrl);
+    }
   </script>
 </head>
-<body>
-  <p>Redirecting to a random LinkedIn post...</p>
-  <p>If you are not redirected automatically, <a id="redirectLink" href="#">click here</a>.</p>
-
-  <script>
-    document.getElementById("redirectLink").href = randomUrl;
-  </script>
-</body>
+<body></body>
 </html>
